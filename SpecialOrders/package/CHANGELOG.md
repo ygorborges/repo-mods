@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.6
+
+- New icon, in the style of the game: a low-poly Semibot peeking over a crate painted like the R.E.P.O. logo, eyeing a glowing deposit coin.
+- No changes to how the mod works.
+
 ## 0.1.5
 
 - Fixed text that was still cut off. The note under Close and the category headings started in the middle of the list, so the page's edge cut off the end of the note and hid the DEPOSIT / ARRIVAL column titles; they now start at the left edge like the rows.

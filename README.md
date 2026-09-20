@@ -2,7 +2,7 @@
 
 Source for my [R.E.P.O.](https://store.steampowered.com/app/3241660/REPO/) mods (BepInEx plugins). Thunderstore namespace: `vibez`.
 
-- **[SpecialOrders](SpecialOrders/)** - order any shop item from the shopkeeper for a deposit; it is waiting in the next shop, at a markup. Tested in the game; not yet on Thunderstore.
+- **[SpecialOrders](SpecialOrders/)** - order any shop item from the shopkeeper for a deposit; it is waiting in the next shop, at a markup. Tested in the game. On [Thunderstore](https://thunderstore.io/c/repo/p/vibez/SpecialOrders/).
 - **[DevTools](DevTools/)** - my testing shortcuts (not published, no Thunderstore package). **F9**: adds $100K and, when you are inside a level, wins it and goes to the shop. Host/singleplayer only; key and amount are in `BepInEx/config/vibez.DevTools.cfg`.
 
 ## Building
@@ -22,7 +22,7 @@ The game is expected in the default Steam library and the profile is named `Defa
 
 ## Publishing
 
-Bump the version in `Plugin.cs`, `package/manifest.json`, `thunderstore.toml` and `package/CHANGELOG.md`, build, then from the mod folder run `tcli build` and `tcli publish --file build/<zip>` (token in the `TCLI_AUTH_TOKEN` environment variable). Check the live version first: `https://thunderstore.io/api/experimental/package/vibez/<Mod>/`.
+Bump the version in `Plugin.cs`, `package/manifest.json`, `thunderstore.toml` and `package/CHANGELOG.md`, build, then from the mod folder run `tcli build` and `tcli publish --file build/<zip>` (token in the `TCLI_AUTH_TOKEN` environment variable). `tcli` can live in `.tools/` next to the SDK: with `DOTNET_ROOT` set to `.tools\dotnet`, run `.\.tools\dotnet\dotnet.exe tool install tcli --version 0.2.4 --tool-path .\.tools\tcli`. In `thunderstore.toml` a copy into the zip root needs `target = "/"` (an empty target makes `tcli build` fail). Check the live version first: `https://thunderstore.io/api/experimental/package/vibez/<Mod>/`.
 
 ## Repo layout
 

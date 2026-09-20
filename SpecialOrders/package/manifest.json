@@ -1,6 +1,6 @@
 {
   "name": "SpecialOrders",
-  "version_number": "0.1.5",
+  "version_number": "0.1.6",
   "website_url": "https://github.com/ygorborges/repo-mods/tree/main/SpecialOrders",
   "description": "Place special orders with the shopkeeper: pay a deposit now and the item is waiting in the next shop you visit, at a markup.",
   "dependencies": [

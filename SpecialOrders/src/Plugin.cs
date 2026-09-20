@@ -14,7 +14,7 @@ namespace SpecialOrders
     {
         public const string Guid = "vibez.SpecialOrders";
         public const string Name = "SpecialOrders";
-        public const string Version = "0.1.5";
+        public const string Version = "0.1.6";
 
         internal static Plugin Instance;
         internal static ManualLogSource Log;
