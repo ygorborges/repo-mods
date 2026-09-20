@@ -6,4 +6,10 @@
     <RootNamespace>DevTools</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Reference Include="$(ManagedDir)\Photon3Unity3D.dll" Private="false" />
+    <Reference Include="$(ManagedDir)\PhotonRealtime.dll" Private="false" />
+    <Reference Include="$(ManagedDir)\PhotonUnityNetworking.dll" Private="false" />
+  </ItemGroup>
+
 </Project>

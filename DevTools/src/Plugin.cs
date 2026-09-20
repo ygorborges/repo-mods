@@ -7,37 +7,45 @@ using UnityEngine.InputSystem;
 namespace DevTools
 {
     // Shortcuts for testing my other mods. Not published; keep it out of any exported profile.
-    [BepInPlugin("vibez.DevTools", "DevTools", "0.1.0")]
+    [BepInPlugin("vibez.DevTools", "DevTools", "0.1.1")]
     public sealed class Plugin : BaseUnityPlugin
     {
         private ConfigEntry<Key> winAndCashKey;
+        private ConfigEntry<Key> spawnKey;
         private ConfigEntry<int> cashK;
 
         private void Awake()
         {
             winAndCashKey = Config.Bind("Keys", "WinLevelAndCash", Key.F9,
                 "Adds cash and, when you are inside a level, wins it (goes to the shop). Host or singleplayer only. Set to None to disable.");
+            spawnKey = Config.Bind("Keys", "SpawnUsableValuable", Key.F10,
+                "Spawns a random valuable that the UsableValuables mod works on (flashlight, boombox, candle, ice saw, wands...) in front of you. Host or singleplayer only. Set to None to disable.");
             cashK = Config.Bind("Cheats", "CashK", 100,
                 "Cash added on each press, in thousands ($K).");
-            Logger.LogInfo("DevTools loaded. " + winAndCashKey.Value + " = win level + $" + cashK.Value + "K.");
+            Logger.LogInfo("DevTools loaded. " + winAndCashKey.Value + " = win level + $" + cashK.Value + "K, " + spawnKey.Value + " = spawn a usable valuable.");
         }
 
         private void Update()
         {
-            Key key = winAndCashKey.Value;
-            if (key == Key.None)
-            {
-                return;
-            }
             Keyboard keyboard = Keyboard.current;
-            if (keyboard == null || !keyboard[key].wasPressedThisFrame)
+            if (keyboard == null)
             {
                 return;
             }
+            OnKey(winAndCashKey, keyboard, WinLevelAndCash);
+            OnKey(spawnKey, keyboard, SpawnUsableValuable);
+        }
 
+        private void OnKey(ConfigEntry<Key> entry, Keyboard keyboard, Action action)
+        {
+            Key key = entry.Value;
+            if (key == Key.None || !keyboard[key].wasPressedThisFrame)
+            {
+                return;
+            }
             try
             {
-                WinLevelAndCash();
+                action();
             }
             catch (Exception ex)
             {
@@ -45,15 +53,25 @@ namespace DevTools
             }
         }
 
-        private void WinLevelAndCash()
+        // Shortcuts only make sense in a run, with no menu or text field taking the keyboard, and only the host may change the game.
+        private bool CanRun()
         {
             if (RunManager.instance == null || SemiFunc.MenuLevel() || !SemiFunc.NoTextInputsActive())
             {
-                return;
+                return false;
             }
             if (!SemiFunc.IsMasterClientOrSingleplayer())
             {
                 Logger.LogInfo("Only the host can use this shortcut.");
+                return false;
+            }
+            return true;
+        }
+
+        private void WinLevelAndCash()
+        {
+            if (!CanRun())
+            {
                 return;
             }
 
@@ -70,6 +88,24 @@ namespace DevTools
             {
                 SemiFunc.UIFocusText("DEV: +$" + cashK.Value + "K", new Color(1f, 0.82f, 0.29f), Color.white, 2f);
             }
+        }
+
+        private void SpawnUsableValuable()
+        {
+            if (!CanRun())
+            {
+                return;
+            }
+
+            string spawned = Spawner.SpawnRandom(Logger);
+            if (spawned == null)
+            {
+                Logger.LogWarning("Nothing to spawn: no valuable that UsableValuables works on was found in the level presets.");
+                SemiFunc.UIFocusText("DEV: no usable valuable found", new Color(1f, 0.4f, 0.3f), Color.white, 2.5f);
+                return;
+            }
+            Logger.LogInfo("Spawned " + spawned + ".");
+            SemiFunc.UIFocusText("DEV: spawned " + spawned, new Color(1f, 0.82f, 0.29f), Color.white, 2.5f);
         }
     }
 }
