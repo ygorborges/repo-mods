@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Shared settings, paths and base references live in ..\Directory.Build.props -->
+  <PropertyGroup>
+    <AssemblyName>UsableValuables</AssemblyName>
+    <RootNamespace>UsableValuables</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="$(ManagedDir)\UnityEngine.UI.dll" Private="false" />
+    <Reference Include="$(ManagedDir)\Unity.TextMeshPro.dll" Private="false" />
+    <Reference Include="$(ManagedDir)\Photon3Unity3D.dll" Private="false" />
+    <Reference Include="$(ManagedDir)\PhotonRealtime.dll" Private="false" />
+    <Reference Include="$(ManagedDir)\PhotonUnityNetworking.dll" Private="false" />
+  </ItemGroup>
+
+</Project>

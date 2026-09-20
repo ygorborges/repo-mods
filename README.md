@@ -3,7 +3,8 @@
 Source for my [R.E.P.O.](https://store.steampowered.com/app/3241660/REPO/) mods (BepInEx plugins). Thunderstore namespace: `vibez`.
 
 - **[SpecialOrders](SpecialOrders/)** - order any shop item from the shopkeeper for a deposit; it is waiting in the next shop, at a markup. Tested in the game. On [Thunderstore](https://thunderstore.io/c/repo/p/vibez/SpecialOrders/).
-- **[DevTools](DevTools/)** - my testing shortcuts (not published, no Thunderstore package). **F9**: adds $100K and, when you are inside a level, wins it and goes to the shop. Host/singleplayer only; key and amount are in `BepInEx/config/vibez.DevTools.cfg`.
+- **[UsableValuables](UsableValuables/)** - hold a valuable that does something (flashlight, boombox, candle, ice saw, blender, jackhammer, scream doll, flamethrower, fire extinguisher, star wand, wizard staff, camera, levitation potion) and press Interact (E) to use it. On [Thunderstore](https://thunderstore.io/c/repo/p/vibez/UsableValuables/).
+- **[DevTools](DevTools/)** - my testing shortcuts (not published, no Thunderstore package). **F9**: adds $100K and, when you are inside a level, wins it and goes to the shop. **F10**: spawns a random valuable that UsableValuables works on in front of you. Host/singleplayer only; keys and amount are in `BepInEx/config/vibez.DevTools.cfg`.
 
 ## Building
 
