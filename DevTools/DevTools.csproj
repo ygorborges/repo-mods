@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Shared settings, paths and base references live in ..\Directory.Build.props -->
+  <PropertyGroup>
+    <AssemblyName>DevTools</AssemblyName>
+    <RootNamespace>DevTools</RootNamespace>
+  </PropertyGroup>
+
+</Project>

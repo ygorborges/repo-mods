@@ -1,0 +1,20 @@
+# Build output
+bin/
+obj/
+build/
+*.zip
+
+# The plugin DLL is generated into each mod's package/ folder by the build
+*/package/*.dll
+
+# Local tooling (portable .NET SDK, decompiler, caches) - downloaded, not source
+.tools/
+
+# Per-machine build overrides (copy local.props.example)
+local.props
+
+# OS/editor cruft
+Thumbs.db
+.DS_Store
+.vs/
+*.swp

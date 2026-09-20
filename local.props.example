@@ -1,0 +1,12 @@
+<Project>
+
+  <!-- Copy to local.props (untracked) and edit. Only set what differs from the defaults in Directory.Build.props. -->
+  <PropertyGroup>
+    <!-- Name of your Thunderstore Mod Manager profile for R.E.P.O. (the build reads BepInEx and MenuLib from it). -->
+    <ProfileName>MyProfile</ProfileName>
+
+    <!-- If the game is not in the default Steam library. -->
+    <!-- <GameDir>D:\SteamLibrary\steamapps\common\REPO</GameDir> -->
+  </PropertyGroup>
+
+</Project>

@@ -1,0 +1,9 @@
+<Project>
+
+  <!-- The Mod Manager link points at <Mod>\package, so the built DLL is copied there (only when it changed:
+       an unchanged DLL that the game currently has loaded can't be overwritten). -->
+  <Target Name="CopyToPackage" AfterTargets="Build">
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(MSBuildProjectDirectory)\package" SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

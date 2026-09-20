@@ -1,0 +1,32 @@
+[config]
+schemaVersion = "0.0.1"
+
+[package]
+namespace = "vibez"
+name = "SpecialOrders"
+versionNumber = "0.1.5"
+description = "Place special orders with the shopkeeper: pay a deposit now and the item is waiting in the next shop you visit, at a markup."
+websiteUrl = "https://github.com/ygorborges/repo-mods/tree/main/SpecialOrders"
+containsNsfwContent = false
+[package.dependencies]
+BepInEx-BepInExPack = "5.4.2305"
+nickklmao-MenuLib = "2.5.4"
+
+[build]
+icon = "./package/icon.png"
+readme = "./package/README.md"
+outdir = "./build"
+
+[[build.copy]]
+source = "./package/SpecialOrders.dll"
+target = ""
+
+[[build.copy]]
+source = "./package/CHANGELOG.md"
+target = ""
+
+[publish]
+repository = "https://thunderstore.io"
+communities = ["repo"]
+[publish.categories]
+repo = ["mods", "items", "ai-generated"]

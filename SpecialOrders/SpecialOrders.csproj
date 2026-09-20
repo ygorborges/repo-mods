@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Shared settings, paths and base references live in ..\Directory.Build.props -->
+  <PropertyGroup>
+    <AssemblyName>SpecialOrders</AssemblyName>
+    <RootNamespace>SpecialOrders</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="MenuLib" HintPath="$(BepInExDir)\plugins\nickklmao-MenuLib\MenuLib.dll" Private="false" />
+    <Reference Include="$(ManagedDir)\UnityEngine.UI.dll" Private="false" />
+    <Reference Include="$(ManagedDir)\Unity.TextMeshPro.dll" Private="false" />
+    <Reference Include="$(ManagedDir)\Unity.Localization.dll" Private="false" />
+    <Reference Include="$(ManagedDir)\Photon3Unity3D.dll" Private="false" />
+    <Reference Include="$(ManagedDir)\PhotonRealtime.dll" Private="false" />
+    <Reference Include="$(ManagedDir)\PhotonUnityNetworking.dll" Private="false" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,10 @@
+{
+  "name": "SpecialOrders",
+  "version_number": "0.1.5",
+  "website_url": "https://github.com/ygorborges/repo-mods/tree/main/SpecialOrders",
+  "description": "Place special orders with the shopkeeper: pay a deposit now and the item is waiting in the next shop you visit, at a markup.",
+  "dependencies": [
+    "BepInEx-BepInExPack-5.4.2305",
+    "nickklmao-MenuLib-2.5.4"
+  ]
+}

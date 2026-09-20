@@ -1,0 +1,36 @@
+<Project>
+
+  <!-- Optional, untracked per-machine overrides (see local.props.example). Imported first so it wins over the defaults below. -->
+  <Import Project="$(MSBuildThisFileDirectory)local.props" Condition="Exists('$(MSBuildThisFileDirectory)local.props')" />
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <DebugType>embedded</DebugType>
+    <Optimize>true</Optimize>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <!-- Machine-specific paths: a standard Steam install and the Mod Manager profile named "Default".
+       Override in local.props, or on the command line: dotnet build -p:GameDir="D:\Steam\...\REPO" -p:ProfileName="MyProfile" -->
+  <PropertyGroup>
+    <GameDir Condition="'$(GameDir)' == ''">C:\Program Files (x86)\Steam\steamapps\common\REPO</GameDir>
+    <ProfileName Condition="'$(ProfileName)' == ''">Default</ProfileName>
+    <ProfileDir Condition="'$(ProfileDir)' == ''">$(APPDATA)\Thunderstore Mod Manager\DataFolder\REPO\profiles\$(ProfileName)</ProfileDir>
+    <ManagedDir>$(GameDir)\REPO_Data\Managed</ManagedDir>
+    <BepInExDir>$(ProfileDir)\BepInEx</BepInExDir>
+  </PropertyGroup>
+
+  <!-- References every mod needs. Mod-specific ones (MenuLib, Photon, ...) go in the mod's own csproj. -->
+  <ItemGroup>
+    <Reference Include="BepInEx" HintPath="$(BepInExDir)\core\BepInEx.dll" Private="false" />
+    <Reference Include="0Harmony" HintPath="$(BepInExDir)\core\0Harmony.dll" Private="false" />
+    <Reference Include="Assembly-CSharp" HintPath="$(ManagedDir)\Assembly-CSharp.dll" Private="false" />
+    <Reference Include="$(ManagedDir)\UnityEngine.dll" Private="false" />
+    <Reference Include="$(ManagedDir)\UnityEngine.*Module.dll" Private="false" />
+    <Reference Include="$(ManagedDir)\Unity.InputSystem.dll" Private="false" />
+  </ItemGroup>
+
+</Project>
