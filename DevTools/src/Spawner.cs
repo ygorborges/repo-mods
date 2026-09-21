@@ -17,7 +17,8 @@ namespace DevTools
         {
             typeof(ValuableFlashlight), typeof(ValuableBoombox), typeof(ValuableForeverCandle),
             typeof(IceSawValuable), typeof(BlenderValuable), typeof(JackhammerValuable), typeof(ScreamDollValuable),
-            typeof(FlamethrowerValuable), typeof(FireExtinguisherValuable),
+            typeof(FlamethrowerValuable), typeof(FireExtinguisherValuable), typeof(FanTrap),
+            typeof(TrapRadio), typeof(TrapGramophone), typeof(TrapTV), typeof(ToyMonkeyTrap), typeof(GrandfatherClockTrap),
             typeof(ValuableStarWand), typeof(ValuableWizardStaff), typeof(ValuableCamera), typeof(ValuableLevitationPotion),
         };
 

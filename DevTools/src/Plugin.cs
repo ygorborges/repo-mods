@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 namespace DevTools
 {
     // Shortcuts for testing my other mods. Not published; keep it out of any exported profile.
-    [BepInPlugin("vibez.DevTools", "DevTools", "0.1.1")]
+    [BepInPlugin("vibez.DevTools", "DevTools", "0.1.2")]
     public sealed class Plugin : BaseUnityPlugin
     {
         private ConfigEntry<Key> winAndCashKey;
