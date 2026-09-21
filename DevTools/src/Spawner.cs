@@ -26,6 +26,15 @@ namespace DevTools
 
         private static bool IsUsable(GameObject prefab)
         {
+            // The banana bow, the handface, the horse and the piano have no script of their own that UsableValuables reacts to:
+            // it knows them by name.
+            foreach (string name in new[] { "banana bow", "handface", "horse", "piano" })
+            {
+                if (prefab.name.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    return true;
+                }
+            }
             foreach (Type script in usableScripts)
             {
                 if (prefab.GetComponentInChildren(script, true) != null)
