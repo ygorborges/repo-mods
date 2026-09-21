@@ -4,7 +4,7 @@ schemaVersion = "0.0.1"
 [package]
 namespace = "vibez"
 name = "UsableValuables"
-versionNumber = "0.1.4"
+versionNumber = "0.1.5"
 description = "Hold a valuable and press E to use it: switch the flashlight, boombox, candle, ice saw and other power-on valuables off and on, fire the flamethrower, cast the star wand, fire the wizard staff, set off the camera flash."
 websiteUrl = "https://github.com/ygorborges/repo-mods/tree/main/UsableValuables"
 containsNsfwContent = false
@@ -23,6 +23,10 @@ target = "/"
 [[build.copy]]
 source = "./package/CHANGELOG.md"
 target = "/"
+
+[[build.copy]]
+source = "./package/audio"
+target = "/audio"
 
 [publish]
 repository = "https://thunderstore.io"

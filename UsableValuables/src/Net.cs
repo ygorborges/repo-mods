@@ -11,10 +11,12 @@ namespace UsableValuables
     //
     //   request:  client -> host   [viewId, kind]
     //   apply:    host   -> all    [viewId, kind, off, cooldown]
+    //   quirk:    host   -> all    [viewId, quirk, phase, x, y, z, size, damage, enemyDamage, extra1, extra2]   (see Mischief)
     internal static class Net
     {
         private const byte EvRequest = 181;
         private const byte EvApply = 182;
+        private const byte EvQuirk = 183;
 
         private static bool initialized;
 
@@ -75,6 +77,29 @@ namespace UsableValuables
                 SendOptions.SendReliable);
         }
 
+        // Host only: a valuable is acting up (see Mischief). Everybody, the host included, plays it out.
+        internal static void AnnounceQuirk(PhysGrabObject body, Quirk quirk, QuirkPhase phase, float size = 0f, int damage = 0, int enemyDamage = 0,
+            float extra1 = 0f, float extra2 = 0f)
+        {
+            Vector3 position = body.centerPoint;
+            if (!SemiFunc.IsMultiplayer())
+            {
+                Mischief.Handle(body, quirk, phase, position, size, damage, enemyDamage, extra1, extra2);
+                return;
+            }
+
+            PhotonView view = body.GetComponent<PhotonView>();
+            if (view == null || view.ViewID == 0)
+            {
+                return;
+            }
+            PhotonNetwork.RaiseEvent(
+                EvQuirk,
+                new object[] { view.ViewID, (byte)quirk, (byte)phase, position.x, position.y, position.z, size, damage, enemyDamage, extra1, extra2 },
+                new RaiseEventOptions { Receivers = ReceiverGroup.All },
+                SendOptions.SendReliable);
+        }
+
         private static void Apply(PhysGrabObject body, KindId id, bool off, float cooldown)
         {
             KindId actual;
@@ -98,6 +123,9 @@ namespace UsableValuables
                         break;
                     case EvApply:
                         OnApply(e);
+                        break;
+                    case EvQuirk:
+                        Mischief.OnEvent(e);
                         break;
                 }
             }

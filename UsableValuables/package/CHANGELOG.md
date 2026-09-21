@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.5
+
+- New: four valuables that do nothing (or hardly anything) in the game now act up by themselves (no key involved).
+- The **banana bow**: while somebody holds it there is a 3% chance each second that a bomb fuse (the game's own) starts burning; two seconds later it says "uh-oh" (your chance to react) and it blows up as that ends, with the game's own explosion, and is gone.
+- The **handface**, held: a 15% chance each second to start laughing loudly (the mod's own laugh recording) and shaking like a cursed doll, which draws enemies while it goes on; it stops 2 seconds after it was let go of, or at once if it is put in the cart.
+- The **handface**, not held: while a player moves within 5 metres it slowly turns to face them, faster and faster the closer it gets to the throw, without falling or leaving its place, and a creeping sound plays (fading in when the movement starts and out when it stops), drawing enemies. If the player keeps moving until the sound is over, the handface is flung at the nearest player, hurts them on impact, knocks them into ragdoll and laughs; that happens once, and after it the handface does nothing any more. It does nothing while held or in the cart. Between its two behaviours it rests for 4 seconds.
+- The **horse** whinnies the first time somebody picks it up, and never again.
+- The **piano**, held by anything but its keys, has a 10% chance each second to start playing the Lassan of Liszt's Hungarian Rhapsody No. 2 (Rachmaninoff's 1919 recording, public domain); it stops 2 seconds after it was let go of.
+- When any of these goes off, whoever holds it (or a player within range of the creeping handface) gets the screen glitch the game shows when a trap goes off (the one you get when the TV turns on).
+- The sounds are files in the new `audio` folder of the package. Everything is configurable (`BananaBow`, `Handface`, `Horse` and `Piano` sections).
+
 ## 0.1.4
 
 - New: the arctic fan (the one that starts blowing as soon as you grab it). The key switches it off and on, like the ice saw, and it can switch itself back on while you hold it (`ReactivateChancePerSecond`, 30% by default).

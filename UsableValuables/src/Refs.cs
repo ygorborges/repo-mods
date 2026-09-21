@@ -74,5 +74,36 @@ namespace UsableValuables
         // Every physics body of the round: the game adds each PhysGrabObject here when it is enabled.
         internal static readonly AccessTools.FieldRef<RoundDirector, List<PhysGrabObject>> RoundBodies =
             AccessTools.FieldRefAccess<RoundDirector, List<PhysGrabObject>>("physGrabObjects");
+
+        // The game's explosion (the barrel's, the clown's): ParticleScriptExplosion.Spawn does the effect and the damage. It
+        // loads its particle prefab in Start (which has not run yet on a component added a moment ago), and it blames the
+        // last player who held the body it sits on unless told otherwise.
+        internal static readonly AccessTools.FieldRef<ParticleScriptExplosion, GameObject> ExplosionPrefab =
+            AccessTools.FieldRefAccess<ParticleScriptExplosion, GameObject>("explosionPrefab");
+
+        internal static readonly AccessTools.FieldRef<ParticleScriptExplosion, PlayerAvatar> ExplosionCauser =
+            AccessTools.FieldRefAccess<ParticleScriptExplosion, PlayerAvatar>("playerCausingHurtOverride");
+
+        internal static readonly AccessTools.FieldRef<PhysGrabObject, PlayerAvatar> LastGrabber =
+            AccessTools.FieldRefAccess<PhysGrabObject, PlayerAvatar>("lastPlayerGrabbing");
+
+        // Whether a player is moving. Every player's avatar carries it (it is sent over the network with the rest of their
+        // state), and the game itself keeps it true for a moment after the movement stops.
+        internal static readonly AccessTools.FieldRef<PlayerAvatar, bool> IsMoving =
+            AccessTools.FieldRefAccess<PlayerAvatar, bool>("isMoving");
+
+        // A player's ragdoll (the game calls it tumbling) and health, for knocking somebody down the way the game's own hurt
+        // colliders and enemies do.
+        internal static readonly AccessTools.FieldRef<PlayerAvatar, PlayerTumble> Tumble =
+            AccessTools.FieldRefAccess<PlayerAvatar, PlayerTumble>("tumble");
+
+        internal static readonly AccessTools.FieldRef<PlayerHealth, int> Health =
+            AccessTools.FieldRefAccess<PlayerHealth, int>("health");
+
+        // The game puts an AudioLowPassLogic on every positional sound (it muffles it behind walls). That component keeps its own
+        // copy of the volume the source started with and puts the source's volume back to it every frame, so a sound whose volume
+        // changes after it started (a fade) has to change that copy too, or the fade is undone.
+        internal static readonly AccessTools.FieldRef<AudioLowPassLogic, float> LowPassVolume =
+            AccessTools.FieldRefAccess<AudioLowPassLogic, float>("Volume");
     }
 }

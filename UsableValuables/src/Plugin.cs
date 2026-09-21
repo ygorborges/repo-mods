@@ -13,7 +13,7 @@ namespace UsableValuables
     {
         public const string Guid = "vibez.UsableValuables";
         public const string Name = "UsableValuables";
-        public const string Version = "0.1.4";
+        public const string Version = "0.1.5";
 
         internal static ManualLogSource Log;
         internal static ConfigEntry<bool> Enabled;
@@ -24,6 +24,9 @@ namespace UsableValuables
         private bool reactivationErrorLogged;
         private bool watchErrorLogged;
         private bool selfStartErrorLogged;
+        private bool mischiefErrorLogged;
+        private bool shakeErrorLogged;
+        private bool clientErrorLogged;
 
         private void Awake()
         {
@@ -33,6 +36,7 @@ namespace UsableValuables
             ShowPrompt = Config.Bind("General", "ShowPrompt", true,
                 "Shows a hint (\"Press E to ...\") while you hold a valuable the key works on.");
             Kinds.Bind(Config);
+            Mischief.Bind(Config);
 
             try
             {
@@ -70,6 +74,9 @@ namespace UsableValuables
             {
                 Log.LogError("Could not patch the switchable valuables: " + ex);
             }
+
+            // The mod's own sounds live in the audio folder next to the DLL; they are read in the background.
+            StartCoroutine(UserAudio.Load(System.IO.Path.GetDirectoryName(Info.Location)));
 
             Log.LogInfo(Name + " " + Version + " loaded.");
         }
@@ -121,6 +128,32 @@ namespace UsableValuables
 
             try
             {
+                Mischief.Tick();
+            }
+            catch (Exception ex)
+            {
+                if (!mischiefErrorLogged)
+                {
+                    mischiefErrorLogged = true;
+                    Log.LogError("Making the banana bow and the handface act up failed (logged once): " + ex);
+                }
+            }
+
+            try
+            {
+                Mischief.ClientTick();
+            }
+            catch (Exception ex)
+            {
+                if (!clientErrorLogged)
+                {
+                    clientErrorLogged = true;
+                    Log.LogError("Playing the banana bow's and the handface's sounds failed (logged once): " + ex);
+                }
+            }
+
+            try
+            {
                 TriggerWatch.Tick();
             }
             catch (Exception ex)
@@ -129,6 +162,27 @@ namespace UsableValuables
                 {
                     watchErrorLogged = true;
                     Log.LogError("Watching the flames failed (logged once): " + ex);
+                }
+            }
+        }
+
+        // The handface's shaking is physics.
+        private void FixedUpdate()
+        {
+            if (broken || !Enabled.Value)
+            {
+                return;
+            }
+            try
+            {
+                Mischief.FixedTick();
+            }
+            catch (Exception ex)
+            {
+                if (!shakeErrorLogged)
+                {
+                    shakeErrorLogged = true;
+                    Log.LogError("Shaking the handface failed (logged once): " + ex);
                 }
             }
         }
