@@ -39,11 +39,18 @@ namespace UsableValuables
                 return;
             }
 
-            // Switches and triggers only have the short anti-spam delay; the actions show how long until they are ready again.
-            float wait = info.Switch || info.Trigger ? 0f : State.Remaining(cachedComponent);
+            // A one-shot trap that has already gone off has nothing left to press.
+            string prompt = Kinds.Prompt(cachedId, cachedComponent);
+            if (prompt == null)
+            {
+                return;
+            }
+
+            // Switches, triggers and one-shot traps only have the short anti-spam delay; the actions show how long until they are ready again.
+            float wait = info.Switch || info.Trigger || info.OneShot ? 0f : State.Remaining(cachedComponent);
             if (Plugin.ShowPrompt.Value)
             {
-                ShowPrompt(wait, Kinds.Prompt(cachedId, cachedComponent));
+                ShowPrompt(wait, prompt);
             }
 
             // The same conditions the game's own item toggle uses: not while a menu or the chat has taken the input.

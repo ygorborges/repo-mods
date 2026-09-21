@@ -176,6 +176,18 @@ namespace UsableValuables
                 return;
             }
 
+            // A one-shot trap: the game's own trigger does the rest (it tells everybody), so there is nothing to announce here.
+            if (info.OneShot)
+            {
+                if (Kinds.TrapSpent(component))
+                {
+                    return;
+                }
+                State.SetCooldown(component, Kinds.SwitchDelay);
+                Kinds.Apply(id, component, false);
+                return;
+            }
+
             // "off" is what the key does to a switch (turn it off) or a trigger (let it go, because it is firing now).
             bool off = info.Trigger ? Kinds.TriggerFiring(component) : info.Switch && !State.IsOff(component);
             float cooldown = info.Switch || info.Trigger ? Kinds.SwitchDelay : info.Cooldown.Value;

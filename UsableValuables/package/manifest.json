@@ -1,6 +1,6 @@
 {
   "name": "UsableValuables",
-  "version_number": "0.1.3",
+  "version_number": "0.1.4",
   "website_url": "https://github.com/ygorborges/repo-mods/tree/main/UsableValuables",
   "description": "Hold a valuable and press E to use it: switch the flashlight, boombox, candle, ice saw and other power-on valuables off and on, fire the flamethrower, cast the star wand, fire the wizard staff, set off the camera flash.",
   "dependencies": [

@@ -20,13 +20,22 @@ namespace UsableValuables
         ScreamDoll = 11,
         Flamethrower = 12,
         FireExtinguisher = 13,
+        Fan = 14,
+        Radio = 15,
+        Gramophone = 16,
+        Television = 17,
+        ToyMonkey = 18,
+        GrandfatherClock = 19,
     }
 
     // The valuables the key works on: what each one is, what its prompt says, and what pressing the key does to it.
     //
-    // Three families:
-    //  - switches (flashlight, boombox, candle, ice saw, blender, jackhammer, scream doll): they run by themselves while
-    //    held, and the key turns that off and on;
+    // Four families:
+    //  - switches (flashlight, boombox, candle, ice saw, blender, jackhammer, scream doll, fan): they run by themselves
+    //    while held, and the key turns that off and on;
+    //  - one-shot traps (radio, gramophone, television, toy monkey, grandfather clock): in the game they go off once, when
+    //    the dice say so while they are held. The key sets one off at once, and each second you hold one there is a chance
+    //    it goes off by itself. Both use the game's own trap trigger, so the effect and its networking are the game's;
     //  - triggers (flamethrower, fire extinguisher): in the game they are fired by grabbing their trigger and burn fuel until
     //    empty; the key pulls and lets go of that trigger, using the game's own methods;
     //  - actions (star wand, wizard staff, camera, levitation potion): the key runs the same method the game runs when the
@@ -36,18 +45,24 @@ namespace UsableValuables
         // Pressing the key on a switch twice in a row can't flicker it faster than this.
         internal const float SwitchDelay = 0.3f;
 
+        // The chance, in percent per second, that a trap-like valuable goes off (or back on) by itself while you hold it.
+        // One number for all of them; each valuable still has its own setting in the config file.
+        private const float DefaultChance = 30f;
+
         internal sealed class Info
         {
             public KindId Id;
             public string Name;
             public bool Switch;
             public bool Trigger;             // flamethrower / extinguisher: the key starts and stops the flames
+            public bool OneShot;             // radio, gramophone, television, toy monkey, grandfather clock: the key sets the trap off, once
             public string PromptOn;          // shown while a switch is on (or for an action, or a trigger not yet pulled): what the key will do
             public string PromptOff;         // shown while a switch is off (or a trigger is firing)
             public string PromptEmpty;       // triggers only: shown when the fuel is gone
             public ConfigEntry<bool> Enabled;
             public ConfigEntry<float> Cooldown;
             public ConfigEntry<float> Reactivate;    // trap-like switches only: chance (%) per second to switch itself back on
+            public ConfigEntry<float> SelfStart;     // one-shot traps only: chance (%) per second to go off by itself while held
         }
 
         private static readonly Dictionary<KindId, Info> all = new Dictionary<KindId, Info>();
@@ -64,22 +79,36 @@ namespace UsableValuables
                 "The flashlight valuable lights up while you hold it; the key switches it off and on.");
             AddSwitch(config, KindId.Boombox, "Boombox",
                 "Press [interact] to mute", "Press [interact] to play",
-                "The boombox valuable plays music (and makes you dance) while you hold it; the key mutes it and starts it again.", 50f);
+                "The boombox valuable plays music (and makes you dance) while you hold it; the key mutes it and starts it again.", DefaultChance);
             AddSwitch(config, KindId.Candle, "Candle",
                 "Press [interact] to blow out the candle", "Press [interact] to light the candle",
                 "The key blows the candle's flame out and lights it again.");
             AddSwitch(config, KindId.IceSaw, "IceSaw",
                 "Press [interact] to switch the saw off", "Press [interact] to switch the saw on",
-                "The ice saw spins up as soon as you grab it; the key switches it off and on.", 50f);
+                "The ice saw spins up as soon as you grab it; the key switches it off and on.", DefaultChance);
             AddSwitch(config, KindId.Blender, "Blender",
                 "Press [interact] to switch the blender off", "Press [interact] to switch the blender on",
-                "The blender starts as soon as you grab it; the key switches it off and on.", 50f);
+                "The blender starts as soon as you grab it; the key switches it off and on.", DefaultChance);
             AddSwitch(config, KindId.Jackhammer, "Jackhammer",
                 "Press [interact] to switch the jackhammer off", "Press [interact] to switch the jackhammer on",
-                "The jackhammer starts as soon as you grab it; the key switches it off and on.", 50f);
+                "The jackhammer starts as soon as you grab it; the key switches it off and on.", DefaultChance);
             AddSwitch(config, KindId.ScreamDoll, "ScreamDoll",
                 "Press [interact] to silence the doll", "Press [interact] to wake the doll",
-                "The scream doll starts as soon as you grab it; the key silences it and wakes it again.", 50f);
+                "The scream doll starts as soon as you grab it; the key silences it and wakes it again.", DefaultChance);
+            AddSwitch(config, KindId.Fan, "Fan",
+                "Press [interact] to switch the fan off", "Press [interact] to switch the fan on",
+                "The arctic fan spins up as soon as you grab it; the key switches it off and on.", DefaultChance);
+
+            AddOneShot(config, KindId.Radio, "Radio", "Press [interact] to turn the radio on",
+                "The radio valuable is one of the game's traps: it blares and draws enemies, once. The key turns it on at once.", DefaultChance);
+            AddOneShot(config, KindId.Gramophone, "Gramophone", "Press [interact] to start the gramophone",
+                "The gramophone valuable is one of the game's traps: it plays its record and draws enemies, once. The key starts it at once.", DefaultChance);
+            AddOneShot(config, KindId.Television, "Television", "Press [interact] to turn the TV on",
+                "The television valuable is one of the game's traps: it switches on and draws enemies, once. The key switches it on at once.", DefaultChance);
+            AddOneShot(config, KindId.ToyMonkey, "ToyMonkey", "Press [interact] to wind up the monkey",
+                "The toy monkey valuable is one of the game's traps: it bangs its cymbals, hops around and draws enemies, once. The key winds it up at once.", DefaultChance);
+            AddOneShot(config, KindId.GrandfatherClock, "GrandfatherClock", "Press [interact] to ring the clock",
+                "The grandfather clock valuable is one of the game's traps: its bell rings, the screen shakes and enemies come, once. The key rings it at once.", DefaultChance);
 
             AddTrigger(config, KindId.Flamethrower, "Flamethrower",
                 "Press [interact] to fire", "Press [interact] to stop", "Out of fuel",
@@ -114,6 +143,21 @@ namespace UsableValuables
                         + "while it is switched off, the way the game's traps go off by themselves. 0 = never. Only the host's setting is used.",
                         new AcceptableValueRange<float>(0f, 100f)));
             }
+            all[id] = info;
+            return info;
+        }
+
+        // These go off once and never again (the game does not let them; see TrapSpent). Each second you hold one that has not
+        // gone off yet there is a chance, in percent, that it goes off by itself, like the dice the game rolls while they are held.
+        private static Info AddOneShot(ConfigFile config, KindId id, string section, string prompt, string description, float selfStartPercent)
+        {
+            Info info = new Info { Id = id, Name = section, OneShot = true, PromptOn = prompt, PromptOff = prompt };
+            info.Enabled = config.Bind(section, "Enabled", true, description + " Only the host's setting is used.");
+            info.SelfStart = config.Bind(section, "SelfStartChancePerSecond", selfStartPercent,
+                new ConfigDescription("Chance, in percent, that this valuable goes off by itself each second you hold it, until it has gone off "
+                    + "(it only goes off once, as in the game). 0 = only with the key, or when the game's own random trigger fires. "
+                    + "Only the host's setting is used.",
+                    new AcceptableValueRange<float>(0f, 100f)));
             all[id] = info;
             return info;
         }
@@ -156,12 +200,18 @@ namespace UsableValuables
                 || Match<BlenderValuable>(go, KindId.Blender, ref id, ref component)
                 || Match<JackhammerValuable>(go, KindId.Jackhammer, ref id, ref component)
                 || Match<ScreamDollValuable>(go, KindId.ScreamDoll, ref id, ref component)
+                || Match<FanTrap>(go, KindId.Fan, ref id, ref component)
                 || Match<FlamethrowerValuable>(go, KindId.Flamethrower, ref id, ref component)
                 || Match<FireExtinguisherValuable>(go, KindId.FireExtinguisher, ref id, ref component)
                 || Match<ValuableStarWand>(go, KindId.StarWand, ref id, ref component)
                 || Match<ValuableWizardStaff>(go, KindId.WizardStaff, ref id, ref component)
                 || Match<ValuableCamera>(go, KindId.Camera, ref id, ref component)
-                || Match<ValuableLevitationPotion>(go, KindId.LevitationPotion, ref id, ref component);
+                || Match<ValuableLevitationPotion>(go, KindId.LevitationPotion, ref id, ref component)
+                || Match<TrapRadio>(go, KindId.Radio, ref id, ref component)
+                || Match<TrapGramophone>(go, KindId.Gramophone, ref id, ref component)
+                || Match<TrapTV>(go, KindId.Television, ref id, ref component)
+                || Match<ToyMonkeyTrap>(go, KindId.ToyMonkey, ref id, ref component)
+                || Match<GrandfatherClockTrap>(go, KindId.GrandfatherClock, ref id, ref component);
         }
 
         private static bool Match<T>(GameObject go, KindId kind, ref KindId id, ref Component component) where T : Component
@@ -177,10 +227,14 @@ namespace UsableValuables
             return true;
         }
 
-        // What the hint says for this valuable right now.
+        // What the hint says for this valuable right now; null = nothing to press (a one-shot trap that has already gone off).
         internal static string Prompt(KindId id, Component component)
         {
             Info info = all[id];
+            if (info.OneShot)
+            {
+                return TrapSpent(component) ? null : info.PromptOn;
+            }
             if (info.Trigger)
             {
                 if (TriggerEmpty(component))
@@ -190,6 +244,14 @@ namespace UsableValuables
                 return TriggerFiring(component) ? info.PromptOff : info.PromptOn;
             }
             return info.Switch && State.IsOff(component) ? info.PromptOff : info.PromptOn;
+        }
+
+        // Has this one-shot trap gone off already (or is it about to)? The game sets trapTriggered the first time and never
+        // clears it for these five, and trapStart stays set as well, so once this is true it stays true.
+        internal static bool TrapSpent(Component component)
+        {
+            Trap trap = component as Trap;
+            return trap == null || trap.trapTriggered || trap.trapStart;
         }
 
         // Whether a flamethrower / extinguisher has its flames (or spray) on right now.
@@ -228,12 +290,22 @@ namespace UsableValuables
                     case KindId.Blender:
                     case KindId.Jackhammer:
                     case KindId.ScreamDoll:
+                    case KindId.Fan:
                         // Nothing to poke: the patches on the valuable's own Update make it behave as if let go while it is off.
                         State.SetOff(component, off, id);
                         break;
                     case KindId.Candle:
                         State.SetOff(component, off, id);
                         SetCandle((ValuableForeverCandle)component, !off);
+                        break;
+                    case KindId.Radio:
+                    case KindId.Gramophone:
+                    case KindId.Television:
+                    case KindId.ToyMonkey:
+                    case KindId.GrandfatherClock:
+                        // The game's own path for a held trap going off. Only the host acts in multiplayer (it sends the RPC),
+                        // so this is only called there (see Host.Handle and SelfStart), never as a network event.
+                        Refs.TrapActivateSync.Invoke(component, null);
                         break;
                     case KindId.Flamethrower:
                     {

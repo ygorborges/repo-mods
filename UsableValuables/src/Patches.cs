@@ -76,6 +76,8 @@ namespace UsableValuables
             Add(harmony, typeof(BlenderValuable), "FixedUpdate", trapBody);
             Add(harmony, typeof(JackhammerValuable), "Update", c => Refs.JackhammerBody((JackhammerValuable)c));
             Add(harmony, typeof(ScreamDollValuable), "FixedUpdate", c => Refs.ScreamDollBody((ScreamDollValuable)c));
+            // The fan is a plain Trap: its Update flips between Idle and Active on grabbed (its FixedUpdate is empty).
+            Add(harmony, typeof(FanTrap), "Update", trapBody);
         }
 
         private static void Add(Harmony harmony, Type type, string method, Func<Component, PhysGrabObject> body)

@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
 using UnityEngine;
@@ -62,5 +64,15 @@ namespace UsableValuables
 
         internal static readonly AccessTools.FieldRef<ValuableStarWand, bool> WandReadyToShoot =
             AccessTools.FieldRefAccess<ValuableStarWand, bool>("readyToShoot");
+
+        // What the game runs when the dice say a held trap goes off: in multiplayer only the host acts (it sends the RPC that
+        // sets trapStart on everybody), in singleplayer it acts directly, and the holder's screen glitches.
+        internal static readonly MethodInfo TrapActivateSync =
+            AccessTools.Method(typeof(Trap), "TrapActivateSync")
+            ?? throw new MissingMethodException("Trap.TrapActivateSync");
+
+        // Every physics body of the round: the game adds each PhysGrabObject here when it is enabled.
+        internal static readonly AccessTools.FieldRef<RoundDirector, List<PhysGrabObject>> RoundBodies =
+            AccessTools.FieldRefAccess<RoundDirector, List<PhysGrabObject>>("physGrabObjects");
     }
 }

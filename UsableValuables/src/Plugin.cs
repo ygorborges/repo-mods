@@ -13,7 +13,7 @@ namespace UsableValuables
     {
         public const string Guid = "vibez.UsableValuables";
         public const string Name = "UsableValuables";
-        public const string Version = "0.1.3";
+        public const string Version = "0.1.4";
 
         internal static ManualLogSource Log;
         internal static ConfigEntry<bool> Enabled;
@@ -23,6 +23,7 @@ namespace UsableValuables
         private bool errorLogged;
         private bool reactivationErrorLogged;
         private bool watchErrorLogged;
+        private bool selfStartErrorLogged;
 
         private void Awake()
         {
@@ -102,6 +103,19 @@ namespace UsableValuables
                 {
                     reactivationErrorLogged = true;
                     Log.LogError("Switching traps back on failed (logged once): " + ex);
+                }
+            }
+
+            try
+            {
+                SelfStart.Tick();
+            }
+            catch (Exception ex)
+            {
+                if (!selfStartErrorLogged)
+                {
+                    selfStartErrorLogged = true;
+                    Log.LogError("Setting the traps off failed (logged once): " + ex);
                 }
             }
 
