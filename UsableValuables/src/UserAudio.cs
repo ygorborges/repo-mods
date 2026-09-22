@@ -21,6 +21,10 @@ namespace UsableValuables
         internal const string TwitchFile = "hand_twitch.mp3";
         internal const string WarningFile = "uh-oh_detonation.mp3";
         internal const string HorseFile = "horse-sound.mp3";
+        internal const string BubblesFile = "bubbles.mp3";
+
+        // Optional: with this file the dish sponge drips with it instead of with the sounds it makes up itself.
+        internal const string DripFile = "sponge_drip.mp3";
 
         // A file with this in its name (mp3 or wav) is the piano's song.
         internal const string SongMarker = "lassan";
@@ -39,6 +43,12 @@ namespace UsableValuables
         // What the horse plays when somebody picks it up.
         internal static AudioClip Horse;
 
+        // What the dish sponge plays the first time somebody picks it up.
+        internal static AudioClip Bubbles;
+
+        // The dish sponge's own drip, if the mod came with (or the user added) a file for it; otherwise null.
+        internal static AudioClip Drip;
+
         // What the piano starts playing, now and then, when it is held by anything but its keys. Null when there is no such file.
         internal static AudioClip PianoSong;
 
@@ -49,6 +59,13 @@ namespace UsableValuables
             yield return LoadOne(Path.Combine(folder, TwitchFile), clip => Twitch = clip);
             yield return LoadOne(Path.Combine(folder, WarningFile), clip => Warning = clip);
             yield return LoadOne(Path.Combine(folder, HorseFile), clip => Horse = clip);
+            yield return LoadOne(Path.Combine(folder, BubblesFile), clip => Bubbles = Louder(clip, 0.9f));
+
+            string drip = Path.Combine(folder, DripFile);
+            if (File.Exists(drip))
+            {
+                yield return LoadOne(drip, clip => Drip = Louder(clip, 0.9f));
+            }
 
             string song = FindSong(folder);
             if (song == null)
@@ -143,6 +160,42 @@ namespace UsableValuables
             clip.name = "UsableValuables " + Path.GetFileNameWithoutExtension(path);
             Plugin.Log.LogInfo("Loaded " + Path.GetFileName(path) + " (" + clip.length.ToString("F2") + " s).");
             done(clip);
+        }
+
+        // The clip with its samples scaled up so that its loudest is at the given level, if it was recorded quieter than that: a sound
+        // cannot be played louder than it was recorded, and a quiet recording is lost next to the game's own sounds (the sponge's
+        // bubbles peak at 0.21, about -32 dB on average). Left as it was if the clip cannot be read or written.
+        private static AudioClip Louder(AudioClip clip, float peak)
+        {
+            try
+            {
+                float[] samples = new float[clip.samples * clip.channels];
+                if (!clip.GetData(samples, 0))
+                {
+                    return clip;
+                }
+                float loudest = 0f;
+                for (int i = 0; i < samples.Length; i++)
+                {
+                    loudest = Mathf.Max(loudest, Mathf.Abs(samples[i]));
+                }
+                if (loudest < 0.0001f || loudest >= peak)
+                {
+                    return clip;
+                }
+                float gain = peak / loudest;
+                for (int i = 0; i < samples.Length; i++)
+                {
+                    samples[i] *= gain;
+                }
+                clip.SetData(samples, 0);
+                Plugin.Log.LogInfo(clip.name + " was quiet (peak " + loudest.ToString("F2") + "): made " + gain.ToString("F1") + " times louder.");
+            }
+            catch (Exception ex)
+            {
+                Plugin.Log.LogWarning("Could not make " + clip.name + " louder: " + ex.Message);
+            }
+            return clip;
         }
 
         private static bool TryWrite(string marker)

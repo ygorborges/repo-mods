@@ -9,11 +9,12 @@ namespace UsableValuables
 {
     // Hold a valuable that does something and press the Interact key (E) to use it.
     [BepInPlugin(Guid, Name, Version)]
+    [BepInDependency("REPOLib")]
     public sealed class Plugin : BaseUnityPlugin
     {
         public const string Guid = "vibez.UsableValuables";
         public const string Name = "UsableValuables";
-        public const string Version = "0.1.5";
+        public const string Version = "0.2.0";
 
         internal static ManualLogSource Log;
         internal static ConfigEntry<bool> Enabled;
@@ -27,6 +28,7 @@ namespace UsableValuables
         private bool mischiefErrorLogged;
         private bool shakeErrorLogged;
         private bool clientErrorLogged;
+        private bool spongeErrorLogged;
 
         private void Awake()
         {
@@ -37,6 +39,8 @@ namespace UsableValuables
                 "Shows a hint (\"Press E to ...\") while you hold a valuable the key works on.");
             Kinds.Bind(Config);
             Mischief.Bind(Config);
+            Sponge.Bind(Config);
+            StaffDamage.Bind(Config);
 
             try
             {
@@ -149,6 +153,19 @@ namespace UsableValuables
                 {
                     clientErrorLogged = true;
                     Log.LogError("Playing the banana bow's and the handface's sounds failed (logged once): " + ex);
+                }
+            }
+
+            try
+            {
+                Sponge.Tick();
+            }
+            catch (Exception ex)
+            {
+                if (!spongeErrorLogged)
+                {
+                    spongeErrorLogged = true;
+                    Log.LogError("Telling the other players about the dish sponge failed (logged once): " + ex);
                 }
             }
 

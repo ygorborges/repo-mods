@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.0
+
+- New: the **dish sponge**, a valuable this mod adds (a yellow kitchen sponge with a green scrubbing layer, about 16 cm, light, hard to break, worth $100 to $300). It turns up in levels like any other small valuable. Moved (carried, shaken, thrown), it blows soap bubbles and drips, more the faster it goes; it stays quiet in the cart.
+- The sponge needs every player in the room to have this mod (a player who cannot create a valuable the host spawned waits at the loading screen for ever), so the host only lets it into a level when everybody has said they have it. Nothing else in the mod needs that: the other features still work with only the host having it.
+- The sponge's first pick-up plays a bubbling sound (`audio/bubbles.mp3`, made louder when it is loaded because it was recorded quietly) with a burst of bubbles for as long as it lasts; it blows more bubbles when moved; its drips are a short "plink" of water; a `sponge_drip.mp3` in the `audio` folder replaces them. It is made with a plain shader (the first version borrowed the shiny metal one of the valuable it is built on and came out dark and colourless).
+- Fixed: holding a valuable the key works on made the game stutter. The hint ("Press E to ...") was being rebuilt every frame, and putting the key names into it asks the input system about every one of the game's key tags each time; it is now done once per text.
+- New setting `WizardStaff/EnemyDamageMultiplier` (1 = the game's own damage, the default) to make the wizard staff's laser hurt enemies more. The mod never lowered that damage: it is a fixed number the game sets on the laser, however the laser is fired.
+- The mod now needs [REPOLib](https://thunderstore.io/c/repo/p/Zehs/REPOLib/) (the Mod Manager installs it). New `Sponge` section in the settings.
+
 ## 0.1.5
 
 - New: four valuables that do nothing (or hardly anything) in the game now act up by themselves (no key involved).

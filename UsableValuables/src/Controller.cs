@@ -11,6 +11,15 @@ namespace UsableValuables
         private static KindId cachedId;
         private static Component cachedComponent;
 
+        // The prompt as it is shown, remembered too. Putting the key names into it (InputManager.InputDisplayReplaceTags) asks the input
+        // system for the name of every one of the game's 22 key tags and builds new strings for each, which the game does once, when a
+        // text changes. Done every frame it made holding any of these valuables stutter, so it is done once per text and again when
+        // another valuable is picked up (which is also when a key rebound in the menu would be noticed).
+        private static string displayedFor;
+        private static string displayed;
+        private static int shownWait = -1;
+        private static string shownWaitText;
+
         internal static void Tick()
         {
             PhysGrabber grabber = PhysGrabber.instance;
@@ -28,6 +37,9 @@ namespace UsableValuables
             {
                 cachedBody = held;
                 cachedSupported = Kinds.TryResolve(held, out cachedId, out cachedComponent);
+                displayedFor = null;
+                displayed = null;
+                shownWait = -1;
             }
             if (!cachedSupported || cachedComponent == null)
             {
@@ -71,12 +83,23 @@ namespace UsableValuables
             string text;
             if (wait > 0.05f)
             {
-                text = "<color=#9a9a9a>Ready in " + Mathf.CeilToInt(wait) + " s</color>";
+                int seconds = Mathf.CeilToInt(wait);
+                if (seconds != shownWait || shownWaitText == null)
+                {
+                    shownWait = seconds;
+                    shownWaitText = "<color=#9a9a9a>Ready in " + seconds + " s</color>";
+                }
+                text = shownWaitText;
             }
             else
             {
-                InputManager input = InputManager.instance;
-                text = input != null ? input.InputDisplayReplaceTags(prompt, "<color=#fff><u><b>", "</b></u></color>") : prompt;
+                if (displayed == null || displayedFor != prompt)
+                {
+                    InputManager input = InputManager.instance;
+                    displayed = input != null ? input.InputDisplayReplaceTags(prompt, "<color=#fff><u><b>", "</b></u></color>") : prompt;
+                    displayedFor = prompt;
+                }
+                text = displayed;
             }
             if (ItemInfoUI.instance != null)
             {

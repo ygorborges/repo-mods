@@ -48,6 +48,14 @@ Four valuables do nothing at all in the game (the piano does, but only when you 
 | Horse | It whinnies the first time somebody picks it up, and never again. |
 | Piano | While somebody holds it by anything but its keys there is a chance (10% by default) each second that it starts playing a song by itself: the slow part (the Lassan) of Liszt's Hungarian Rhapsody No. 2, in Rachmaninoff's 1919 recording. The song plays for as long as the piano is held, and stops 2 seconds after it was let go of. Grab the keys and it plays notes as usual. |
 
+## The dish sponge
+
+A valuable of its own, which this mod adds: a yellow kitchen sponge with a green scrubbing layer. It is small (about 16 cm), light, hard to break and worth $100 to $300. It turns up in levels the way any other small valuable does, and you pick it up, throw it, put it in the cart and extract it like the rest.
+
+The first time somebody picks a sponge up it plays a bubbling sound and blows a burst of bubbles for as long as the sound lasts, and then stops. After that, move it (carry it, shake it, throw it) and it blows soap bubbles and drips: the faster it goes, the more bubbles, with the sound of a drop now and then and, once in a while, a bubble bursting. Turning it counts as moving it. It stays quiet in the cart, which moves it for you. To drip with a sound of your own, put an mp3 called `sponge_drip.mp3` in the mod's `audio` folder.
+
+Everybody in the room needs this mod for the sponge to turn up. A player who cannot create a valuable that the host spawned waits at the loading screen for ever, so every player who has the mod says so when they join, and the host only lets the sponge into a level when everybody in the room has said it. With one player without the mod (or with the sponge switched off), the rest of the mod works as usual and there is simply no sponge. The sponge needs [REPOLib](https://thunderstore.io/c/repo/p/Zehs/REPOLib/), which the Mod Manager installs with this mod.
+
 ## Multiplayer
 
 The **host must have the mod**: it checks every request (you have to be holding the valuable, and it has to be ready again) and tells everyone what happened. Everyone else needs it to press the key, and to *see and hear* the flashlight, boombox and candle switches, the camera flash and the potion. The star wand, the staff and the ice saw, blender, jackhammer, scream doll, fan, flamethrower and fire extinguisher work through the game's own networking (the host runs them), so everybody sees them. So do the one-shot traps (radio, gramophone, television, toy monkey, grandfather clock): the host sets them off with the game's own trap trigger. For the banana bow and the handface the host rolls the dice, shakes the handface and alerts the enemies, and removes the banana bow; the fuse, the "uh-oh", the laugh, the creeping sound, the horse's whinny, the piano's song, the screen glitch and the explosion effect are played on each player's own machine, so a player without the mod does not hear or see those (they do see the handface shake, turn and fly, and the banana bow disappear). The impact of the flung handface is checked on each player's own machine against that player, as the game does for its own hazards.
@@ -91,6 +99,13 @@ Edit them in `BepInEx/config/vibez.UsableValuables.cfg` (or with REPOConfig).
 | `Piano/StartChancePerSecond` | 10 | Chance, in percent, that it starts its song each second. |
 | `Piano/StopSecondsAfterDrop` | 2 | Seconds after it was let go of before the song stops. |
 | `Piano/Volume`, `Piano/Falloff` | 0.8, 1.5 | How loud the song is (0-1) and how far it carries, on your machine. |
+| `Sponge/Enabled` | true | Adds the dish sponge. It only turns up when every player in the room has the mod. Needs a restart of the game. |
+| `Sponge/MinValue`, `MaxValue` | 100, 300 | What a dish sponge is worth, in dollars (the game rounds prices to hundreds). Needs a restart; the host's setting decides. |
+| `Sponge/MinSpeed` | 0.5 | How fast (metres per second, turning counts too) the sponge has to be moved to blow bubbles and drip. |
+| `Sponge/BubbleAmount` | 1 | How many bubbles it blows (0 = none), on your machine. |
+| `Sponge/DripVolume`, `DripFalloff` | 0.7, 1.2 | How loud the drips are (0-1) and how far they carry, on your machine. |
+| `Sponge/FirstGrabVolume`, `FirstGrabFalloff` | 1, 1.5 | How loud the bubbling sound of the first pick-up is (0-1) and how far it carries, on your machine. |
+| `WizardStaff/EnemyDamageMultiplier` | 1 | How much harder the wizard staff's laser hurts enemies than in the game (1 = the game's own damage, 3 = three times as much), however the laser is fired. The host's setting is used. The game's damage per hit is written to the log when a staff appears. |
 | `StarWand/CooldownSeconds` | 1.5 | Seconds between casts. |
 | `WizardStaff/CooldownSeconds` | 3 | Seconds between shots. |
 | `Camera/CooldownSeconds` | 6 | Seconds between flashes. |

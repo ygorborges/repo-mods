@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Reference Include="REPOLib" HintPath="$(BepInExDir)\plugins\Zehs-REPOLib\REPOLib.dll" Private="false" />
     <Reference Include="$(ManagedDir)\UnityEngine.UI.dll" Private="false" />
     <Reference Include="$(ManagedDir)\Unity.TextMeshPro.dll" Private="false" />
     <Reference Include="$(ManagedDir)\Photon3Unity3D.dll" Private="false" />

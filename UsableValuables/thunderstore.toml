@@ -4,12 +4,13 @@ schemaVersion = "0.0.1"
 [package]
 namespace = "vibez"
 name = "UsableValuables"
-versionNumber = "0.1.5"
-description = "Hold a valuable and press E to use it: switch the flashlight, boombox, candle, ice saw and other power-on valuables off and on, fire the flamethrower, cast the star wand, fire the wizard staff, set off the camera flash."
+versionNumber = "0.2.0"
+description = "Hold a valuable and press E to use it (flashlight, boombox, candle, saws, traps, flamethrower, wands, camera). Some valuables act up by themselves, and a new one, a dish sponge, blows bubbles and drips when moved."
 websiteUrl = "https://github.com/ygorborges/repo-mods/tree/main/UsableValuables"
 containsNsfwContent = false
 [package.dependencies]
 BepInEx-BepInExPack = "5.4.2305"
+Zehs-REPOLib = "4.2.0"
 
 [build]
 icon = "./package/icon.png"

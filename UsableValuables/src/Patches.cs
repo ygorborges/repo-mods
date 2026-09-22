@@ -20,6 +20,15 @@ namespace UsableValuables
             {
                 Plugin.Log.LogError("Could not register the network handler: " + ex);
             }
+
+            try
+            {
+                Sponge.Register();
+            }
+            catch (Exception ex)
+            {
+                Plugin.Log.LogError("Could not add the dish sponge: " + ex);
+            }
         }
     }
 

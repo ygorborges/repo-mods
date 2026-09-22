@@ -1,9 +1,10 @@
 {
   "name": "UsableValuables",
-  "version_number": "0.1.5",
+  "version_number": "0.2.0",
   "website_url": "https://github.com/ygorborges/repo-mods/tree/main/UsableValuables",
-  "description": "Hold a valuable and press E to use it: switch the flashlight, boombox, candle, ice saw and other power-on valuables off and on, fire the flamethrower, cast the star wand, fire the wizard staff, set off the camera flash.",
+  "description": "Hold a valuable and press E to use it (flashlight, boombox, candle, saws, traps, flamethrower, wands, camera). Some valuables act up by themselves, and a new one, a dish sponge, blows bubbles and drips when moved.",
   "dependencies": [
-    "BepInEx-BepInExPack-5.4.2305"
+    "BepInEx-BepInExPack-5.4.2305",
+    "Zehs-REPOLib-4.2.0"
   ]
 }

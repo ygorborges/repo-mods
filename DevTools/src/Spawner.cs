@@ -28,7 +28,7 @@ namespace DevTools
         {
             // The banana bow, the handface, the horse and the piano have no script of their own that UsableValuables reacts to:
             // it knows them by name.
-            foreach (string name in new[] { "banana bow", "handface", "horse", "piano" })
+            foreach (string name in new[] { "banana bow", "handface", "horse", "piano", "dish sponge" })
             {
                 if (prefab.name.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0)
                 {
@@ -106,13 +106,29 @@ namespace DevTools
                 return null;
             }
 
-            PlayerController player = PlayerController.instance;
-            if (player == null || player.playerAvatarScript == null || player.playerAvatarScript.localCamera == null)
+            PrefabRef chosen = candidates[UnityEngine.Random.Range(0, candidates.Count)];
+            return Place(chosen.ResourcePath, chosen.Prefab) ? chosen.PrefabName : null;
+        }
+
+        // A valuable by its resource path, for one that may not be in the level presets (UsableValuables takes the dish sponge out of them
+        // when somebody in the room lacks the mod). REPOLib answers Resources.Load for the prefabs it registered.
+        internal static string SpawnByPath(string resourcePath)
+        {
+            GameObject prefab = Resources.Load<GameObject>(resourcePath);
+            if (prefab == null)
             {
                 return null;
             }
+            return Place(resourcePath, prefab) ? prefab.name : null;
+        }
 
-            PrefabRef chosen = candidates[UnityEngine.Random.Range(0, candidates.Count)];
+        private static bool Place(string resourcePath, GameObject prefab)
+        {
+            PlayerController player = PlayerController.instance;
+            if (prefab == null || player == null || player.playerAvatarScript == null || player.playerAvatarScript.localCamera == null)
+            {
+                return false;
+            }
 
             // About two steps in front of you, at chest height (it drops from there); closer if a wall is in the way.
             Transform view = player.playerAvatarScript.localCamera.GetOverrideTransform();
@@ -128,8 +144,8 @@ namespace DevTools
             Quaternion rotation = flat.sqrMagnitude > 0.001f ? Quaternion.LookRotation(-flat) : Quaternion.identity;
 
             GameObject spawned = GameManager.Multiplayer()
-                ? PhotonNetwork.InstantiateRoomObject(chosen.ResourcePath, position, rotation, 0)
-                : UnityEngine.Object.Instantiate(chosen.Prefab, position, rotation);
+                ? PhotonNetwork.InstantiateRoomObject(resourcePath, position, rotation, 0)
+                : UnityEngine.Object.Instantiate(prefab, position, rotation);
 
             // Valuables normally get their price while the level is generated.
             ValuableObject valuable = spawned != null ? spawned.GetComponent<ValuableObject>() : null;
@@ -137,7 +153,7 @@ namespace DevTools
             {
                 valuable.DollarValueSetLogic();
             }
-            return chosen.PrefabName;
+            return true;
         }
     }
 }
