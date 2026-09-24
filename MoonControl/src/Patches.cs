@@ -128,28 +128,55 @@ namespace MoonControl
             {
                 return;
             }
-            int level = MoonState.Applied;
-            if (level <= 0)
+            // While the level generator is in the middle of spawning this one, the bonus waits until it is done with it
+            // (see SpawnValuableBonusPatch) - it must not count towards the generator's own budget.
+            if (SpawnValuableBonusPatch.Defer(__instance))
             {
                 return;
             }
-            try
+            MoonBonus.Apply(__instance);
+        }
+    }
+
+    // The level generator spends a value budget as it fills a level: SpawnValuable adds each valuable's price to its
+    // running total (in thousands) and, the moment that passes the level's allowance, stops the spawn loop there. Letting
+    // the moon's bonus into that sum meant a moon spent the budget faster and the level simply got FEWER valuables,
+    // largely cancelling out the bonus instead of making the level worth more. So during the generator's own call the
+    // bonus is held back, and applied right after it has counted the plain, unmodified price - the level then generates
+    // exactly as it would without any moon, and everything in it is then worth the bonus more.
+    [HarmonyPatch(typeof(ValuableDirector), "SpawnValuable")]
+    internal static class SpawnValuableBonusPatch
+    {
+        private static bool spawning;
+        private static ValuableObject pending;
+
+        internal static bool Defer(ValuableObject valuable)
+        {
+            if (!spawning)
             {
-                float multiplier = 1f + Plugin.ValueBonusPercent.Value / 100f * level;
-                float baseValue = Refs.DollarValueCurrent(__instance);
-                MoonBonus.Record(__instance, baseValue);
-                Refs.DollarValueOriginal(__instance) = Round(Refs.DollarValueOriginal(__instance) * multiplier);
-                Refs.DollarValueCurrent(__instance) = Round(baseValue * multiplier);
+                return false;
             }
-            catch (Exception ex)
-            {
-                Plugin.Log.LogError("Applying the moon's value bonus to a valuable failed: " + ex);
-            }
+            pending = valuable;
+            return true;
         }
 
-        private static float Round(float value)
+        private static void Prefix()
         {
-            return Mathf.Round(value / 100f) * 100f;
+            spawning = true;
+            pending = null;
+        }
+
+        // A finalizer rather than a postfix so the flag is always cleared, even if the spawn itself throws - otherwise every
+        // valuable after it would be deferred to a call that never comes, and quietly lose its bonus.
+        private static void Finalizer()
+        {
+            spawning = false;
+            ValuableObject valuable = pending;
+            pending = null;
+            if (valuable != null)
+            {
+                MoonBonus.Apply(valuable);
+            }
         }
     }
 

@@ -25,6 +25,9 @@ namespace MoonControl
         // non-negative number is a real moon level.
         private const int RandomSentinel = -1;
 
+        // The gap between the popup's own panel and the preview panel beside it.
+        private const float PanelGap = 10f;
+
         private static REPOPopupPage page;
         private static TextMeshProUGUI textStyle;
         private static readonly Dictionary<int, REPOButton> rows = new Dictionary<int, REPOButton>();
@@ -42,6 +45,15 @@ namespace MoonControl
         private static REPOLabel description;
         private static float iconAreaLeft, iconAreaTop, iconAreaWidth, iconAreaHeight;
         private static int selectedLevel = -1;
+
+        // ---- the Close button (hit-tested by hand every frame, see TickCloseButton)
+        private static RectTransform closeRect;
+        private static Image closeImage;
+        private static TextMeshProUGUI closeText;
+        private static Camera closeCamera;
+        private static bool closeHovering;
+        private static readonly Color CloseIdle = new Color(0.12f, 0.12f, 0.12f, 0.9f);
+        private static readonly Color CloseHover = new Color(0.32f, 0.32f, 0.32f, 0.95f);
 
         internal static bool IsOpen
         {
@@ -177,13 +189,16 @@ namespace MoonControl
             for (int level = 0; level <= unlocked; level++)
             {
                 int captured = level;
+                // The first row carries the gap between the page's title and the start of the list (REPOScrollView honours
+                // each element's own top padding when it stacks them).
+                float topPadding = level == 0 ? 18f : 0f;
                 page.AddElementToScrollView(scroll =>
                 {
                     REPOButton button = CreateRow(scroll, RowText(captured, !MoonState.RandomMode && captured == MoonState.Applied),
                         () => Net.Request(captured));
                     rows[captured] = button;
                     return button.rectTransform;
-                });
+                }, topPadding);
             }
 
             if (isHost && unlocked >= 1)
@@ -383,9 +398,8 @@ namespace MoonControl
 
         // ---- the right-hand side panel: icon(s) + name + effects on top (like the game's own "moon just changed"
         // screen), the mod's general explanation at the bottom, all against its own background so it reads against the 3D
-        // scene behind the menu. Built once, geometry measured the same way SpecialOrders' order list measures its own
-        // side panel (world corners of the list's mask/scrollbar, converted to the page's local space) - reusing its
-        // proven width fraction. Spans the full height of the list, same as the list itself.
+        // scene behind the menu. Built once, as a twin of the popup's own background panel (the "Panel" child MenuLib
+        // re-parents under the page content): same size, sitting right beside it.
 
         private static void BuildSidePanel()
         {
@@ -404,57 +418,45 @@ namespace MoonControl
                     page.scrollView.UpdateElements();
                 }
 
-                // The list's own mask is a fixed-size scroll container, taller than however many rows happen to be in it
-                // right now (that is the whole point of a scroll view) - sizing the right panel to the MASK made it taller
-                // than the actual, visible list whenever there were only a few rows. Measuring the rows themselves (plus
-                // Random) gives the true visible top/bottom of the list instead.
-                Vector2 rowsMin = new Vector2(float.MaxValue, float.MaxValue);
-                Vector2 rowsMax = new Vector2(float.MinValue, float.MinValue);
-                foreach (REPOButton button in rows.Values)
+                // The popup's own background art, which is what reads on screen as "the left panel". Matching it exactly
+                // (and sitting the new panel alongside) is what makes the two columns look like a pair, instead of the
+                // right one being a smaller box floating next to a much taller one.
+                RectTransform panel = page.rectTransform.Find("Panel") as RectTransform;
+                float left, top, bottom, side;
+                if (panel != null)
                 {
-                    if (button == null)
-                    {
-                        continue;
-                    }
-                    button.rectTransform.GetWorldCorners(corners);
-                    foreach (Vector3 corner in corners)
-                    {
-                        rowsMin = Vector2.Min(rowsMin, corner);
-                        rowsMax = Vector2.Max(rowsMax, corner);
-                    }
+                    panel.GetWorldCorners(corners);
+                    Vector3 panelBottomLeft = host.InverseTransformPoint(corners[0]);
+                    Vector3 panelTopRight = host.InverseTransformPoint(corners[2]);
+                    top = panelTopRight.y;
+                    bottom = panelBottomLeft.y;
+                    side = panelTopRight.x - panelBottomLeft.x;
+                    left = panelTopRight.x + PanelGap;
                 }
-                if (randomButton != null)
+                else
                 {
-                    randomButton.rectTransform.GetWorldCorners(corners);
-                    foreach (Vector3 corner in corners)
-                    {
-                        rowsMin = Vector2.Min(rowsMin, corner);
-                        rowsMax = Vector2.Max(rowsMax, corner);
-                    }
+                    // No such child to measure (a MenuLib change, say): fall back to the list's own mask, which is at least
+                    // always there.
+                    page.maskRectTransform.GetWorldCorners(corners);
+                    Vector3 maskBottomLeft = host.InverseTransformPoint(corners[0]);
+                    Vector3 maskTopRight = host.InverseTransformPoint(corners[2]);
+                    top = maskTopRight.y;
+                    bottom = maskBottomLeft.y;
+                    side = (maskTopRight.y - maskBottomLeft.y) * 0.73f;
+                    left = maskTopRight.x + PanelGap;
                 }
-                bool haveRows = rowsMin.x <= rowsMax.x;
-                Vector3 listTop = host.InverseTransformPoint(haveRows ? new Vector3(rowsMin.x, rowsMax.y, 0f) : Vector3.zero);
-                Vector3 listBottom = host.InverseTransformPoint(haveRows ? new Vector3(rowsMin.x, rowsMin.y, 0f) : Vector3.zero);
-
-                page.maskRectTransform.GetWorldCorners(corners);
-                Vector3 maskTopLeft = host.InverseTransformPoint(corners[1]);
-                Vector3 maskBottomLeft = host.InverseTransformPoint(corners[0]);
-                // maskHeight (the scroll container's own, larger size) is still what decides the column's WIDTH and left
-                // margin, the same proven fraction SpecialOrders' order list uses - only the vertical extent (top/bottom,
-                // and everything stacked within it below) switches to the rows' real height.
-                float maskHeight = maskTopLeft.y - maskBottomLeft.y;
-                float top = haveRows ? listTop.y : maskTopLeft.y;
-                float bottom = haveRows ? listBottom.y : maskBottomLeft.y;
-                float height = top - bottom;
-
-                page.scrollBarRectTransform.GetWorldCorners(corners);
-                float left = host.InverseTransformPoint(corners[2]).x + maskHeight * 0.06f;
-                float side = maskHeight * 0.56f * 1.3f;
-                float margin = height * 0.03f;
 
                 // A dark panel behind everything else on this side - without it the text just floats over the 3D scene
                 // behind the menu, unreadable.
-                RectTransform backgroundRect = AddBackground(host, new Vector2(left - margin, top + margin), side + margin * 2f, height + margin * 2f);
+                RectTransform backgroundRect = AddBackground(host, new Vector2(left, top), side, top - bottom);
+
+                // Everything inside the panel keeps clear of its edges.
+                float inset = Mathf.Max(10f, (top - bottom) * 0.04f);
+                left += inset;
+                side -= inset * 2f;
+                top -= inset;
+                bottom += inset;
+                float height = top - bottom;
 
                 float titleHeight = height * 0.09f;
                 previewTitle = AddTextBlock(host, new Vector2(left, top), side, titleHeight, 20f, 12f, true);
@@ -474,34 +476,34 @@ namespace MoonControl
                 previewIcon = iconGo.AddComponent<RawImage>();
                 previewIcon.raycastTarget = false;
 
-                // A fixed, modest chunk at the bottom for the general explanation - the attribute list above gets
-                // whatever is left, which is most of the column, since it is real game text (one to a few full
-                // sentences per moon) that needs far more room than a single status line did.
-                float descHeight = Mathf.Max(height * 0.15f, 40f);
-                description = AddTextBlock(host, new Vector2(left, bottom + descHeight), side, descHeight, 14f, 9f, false);
+                // The bottom of the column is split into two reserved strips: the explanation, and below it a footer
+                // just for Close. Close used to be placed at the column's bottom edge with nothing reserved for it, so
+                // it landed on top of the explanation's last lines. The explanation is also kept short enough to fit
+                // its own strip outright - the longer one it had overflowed its box (TMP draws outside the rect once
+                // auto-sizing bottoms out) and spilled down across the footer as well.
+                const float closeWidth = 90f;
+                const float closeHeight = 26f;
+                float footer = closeHeight + gap;
+
+                float descHeight = Mathf.Max(height * 0.16f, 40f);
+                float descTop = bottom + footer + descHeight;
+                description = AddTextBlock(host, new Vector2(left, descTop), side, descHeight, 12f, 8f, false);
                 description.labelTMP.text =
                     "Each moon level applied adds " + Plugin.ValueBonusPercent.Value.ToString("0.#")
-                    + "% to what every valuable is worth (added together per level), for as long as it stays applied. Picking one "
-                    + "also turns on everything else that moon changes in the game. Only the host's choice counts.";
+                    + "% to what every valuable is worth. Only the host's choice counts.";
 
                 float attrTop = iconAreaTop - iconAreaHeight - gap;
-                float attrBottom = bottom + descHeight + gap;
+                float attrBottom = descTop + gap;
                 float attrHeight = Mathf.Max(attrTop - attrBottom, height * 0.1f);
                 previewAttributes = AddTextBlock(host, new Vector2(left, attrTop), side, attrHeight, 15f, 8f, false);
 
-                // Close moved out of the list entirely, to the bottom-right corner of the whole popup - built as a plain
-                // button rather than a REPOButton/MenuButton this time. MenuButton drives its hover highlight through a
-                // shared "selection box" system (SemiFunc.MenuSelectionBoxTargetSet) built for buttons living in a proper
-                // menu grid or scroll list; outside of one, twice fixing its rectTransform.sizeDelta (once directly, once
-                // via overrideButtonSize) still left the highlight itself showing at roughly a full list row's width. A
-                // plain Button+Image sidesteps that machinery entirely instead of chasing it further.
-                RectTransform closeRect = AddCloseButton(host, new Vector2(left + side, bottom));
+                RectTransform close = AddCloseButton(host, new Vector2(left + side - closeWidth, bottom), closeWidth, closeHeight);
 
                 RefreshPreview();
 
                 List<RectTransform> parts = new List<RectTransform>
                 {
-                    page.maskRectTransform, page.scrollBarRectTransform, backgroundRect, closeRect,
+                    panel, page.maskRectTransform, page.scrollBarRectTransform, backgroundRect, close,
                     previewTitle.rectTransform, previewAttributes.rectTransform, description.rectTransform,
                 };
                 CenterOnScreen(parts);
@@ -566,40 +568,96 @@ namespace MoonControl
             return rect;
         }
 
-        // A plain, self-contained close button - a UnityEngine.UI.Button, not a REPOButton/MenuButton, so it never touches
-        // the game's own hover-highlight/selection-box system (see the comment where this is called). bottomRight is
-        // where its own bottom-right corner should land.
-        private static RectTransform AddCloseButton(Transform host, Vector2 bottomRight)
+        // A self-contained close button: just an Image and a label, hit-tested by hand in TickCloseButton.
+        //
+        // It is deliberately neither a REPOButton/MenuButton nor a UnityEngine.UI.Button. MenuButton drives its hover
+        // highlight through a shared "selection box" (SemiFunc.MenuSelectionBoxTargetSet) meant for buttons living in a
+        // real menu grid or scroll list; outside of one it showed a highlight roughly a full list row wide no matter
+        // what size the button itself was given. A UnityEngine.UI.Button, in turn, was never clickable at all: the
+        // game's menus have no EventSystem-driven input, every one of its own buttons polls SemiFunc.UIMouseHover plus
+        // the legacy Input.GetMouseButtonDown(0) itself (MenuButton.HoverLogic), so nothing ever raised onClick.
+        //
+        // bottomLeft is where its bottom-left corner should land; the pivot has to be (0,0) for the game's own hover
+        // test (used as a fallback below) to line up - it applies the pivot offset twice for any other pivot.
+        private static RectTransform AddCloseButton(Transform host, Vector2 bottomLeft, float width, float height)
         {
-            const float width = 90f;
-            const float height = 30f;
-
             GameObject go = new GameObject("Close", typeof(RectTransform));
             go.transform.SetParent(host, false);
             RectTransform rect = (RectTransform)go.transform;
             rect.anchorMin = new Vector2(0.5f, 0.5f);
             rect.anchorMax = new Vector2(0.5f, 0.5f);
-            rect.pivot = new Vector2(1f, 0f);
+            rect.pivot = Vector2.zero;
             rect.sizeDelta = new Vector2(width, height);
-            rect.localPosition = new Vector3(bottomRight.x, bottomRight.y, 0f);
+            rect.localPosition = new Vector3(bottomLeft.x, bottomLeft.y, 0f);
 
-            Image background = go.AddComponent<Image>();
-            background.color = new Color(0.12f, 0.12f, 0.12f, 0.9f);
+            closeImage = go.AddComponent<Image>();
+            closeImage.color = CloseIdle;
+            closeImage.raycastTarget = false;
 
-            Button button = go.AddComponent<Button>();
-            button.targetGraphic = background;
-            ColorBlock colors = button.colors;
-            colors.normalColor = new Color(0.12f, 0.12f, 0.12f, 0.9f);
-            colors.highlightedColor = new Color(0.3f, 0.3f, 0.3f, 0.95f);
-            colors.pressedColor = HexColor(Gold);
-            button.colors = colors;
-            button.onClick.AddListener(() => page.ClosePage(true));
+            closeText = CreateText(rect, textStyle, "Text", 14f, TextAlignmentOptions.Midline);
+            Stretch(closeText.rectTransform);
+            closeText.text = "Close";
 
-            TextMeshProUGUI text = CreateText(rect, textStyle, "Text", 14f, TextAlignmentOptions.Midline);
-            Stretch(text.rectTransform);
-            text.text = "Close";
-            text.raycastTarget = false;
+            Canvas canvas = page.GetComponentInParent<Canvas>();
+            closeCamera = canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay
+                ? (canvas.worldCamera != null ? canvas.worldCamera : OverlayCamera())
+                : null;
+            closeRect = rect;
+            closeHovering = false;
             return rect;
+        }
+
+        // The camera the game itself measures UI against (CameraOverlay.overlayCamera is internal, but its Awake just
+        // takes the Camera off its own object, so this is the same one).
+        private static Camera OverlayCamera()
+        {
+            try
+            {
+                return CameraOverlay.instance != null ? CameraOverlay.instance.GetComponent<Camera>() : null;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        // Polls the mouse the same way the game's own buttons do. The primary test is Unity's own, which is the only
+        // one that stays correct while the whole popup is scaled by MenuScale: the game's math adds the rect's
+        // UNSCALED extents to an already-scaled offset, so its box comes out 1/MenuScale too large. Its test is still
+        // kept as a fallback, in case this canvas needs a camera other than the one worked out above.
+        private static void TickCloseButton()
+        {
+            if (closeRect == null)
+            {
+                return;
+            }
+            bool hovering;
+            try
+            {
+                hovering = RectTransformUtility.RectangleContainsScreenPoint(closeRect, Input.mousePosition, closeCamera)
+                    || (page.menuPage != null && SemiFunc.UIMouseHover(page.menuPage, closeRect, "-1"));
+            }
+            catch (Exception)
+            {
+                return;
+            }
+
+            if (hovering != closeHovering)
+            {
+                closeHovering = hovering;
+                if (closeImage != null)
+                {
+                    closeImage.color = hovering ? CloseHover : CloseIdle;
+                }
+                if (closeText != null)
+                {
+                    closeText.color = hovering ? HexColor(Gold) : Color.white;
+                }
+            }
+            if (hovering && Input.GetMouseButtonDown(0))
+            {
+                page.ClosePage(true);
+            }
         }
 
         // A second, shorter note (used for "nothing unlocked yet" and the read-only notice): its own object each time, so
@@ -748,6 +806,7 @@ namespace MoonControl
                 return;
             }
             Refresh();
+            TickCloseButton();
         }
 
         private static void OnPageDestroyed()
@@ -759,6 +818,11 @@ namespace MoonControl
             previewTitle = null;
             previewAttributes = null;
             description = null;
+            closeRect = null;
+            closeImage = null;
+            closeText = null;
+            closeCamera = null;
+            closeHovering = false;
             multiIcons.Clear();
             selectedLevel = -1;
             rows.Clear();

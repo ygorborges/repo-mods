@@ -1,7 +1,5 @@
 # Moon Control
 
-**Work in progress.** This is an early, actively-changing build - menu layout, button placement and even the bonus formula have all shifted between versions, and not every change has been confirmed in a real game session yet. Expect rough edges, and please report anything odd (especially in multiplayer).
-
 The game raises the moon on its own, one step every 5 levels, and once it does the moon never goes back down for the rest of the run - it makes things progressively harder (and stranger) whether you want that or not. This mod takes that away: **the moon stays off until you turn one on yourself**, by grabbing the moon button in the truck, and only a moon your progress has actually earned can be chosen. Turning one on also gives every valuable a bonus to what it is worth, so choosing a harder moon is a choice, not just something that happens to you.
 
 ## The moon button
@@ -27,8 +25,13 @@ Edit them in `BepInEx/config/vibez.MoonControl.cfg` (or with REPOConfig).
 | `General/ButtonPositionX`, `ButtonPositionY`, `ButtonPositionZ` | -13.40, 0.69, -1.90 | The moon button's fixed world position in the truck. Only the host's setting is used (the host is the one who places it). The default is where the button sits by default; if the truck ever looks different, or you just prefer another spot, find a new one with DevTools' coordinate probe (aim at the floor spot you want and read its "World XYZ" off the on-screen readout). |
 | `General/ButtonYawDegrees` | 0 | Which way the moon button faces, in degrees around the vertical axis. Only cosmetic. |
 | `General/ButtonScale` | 1.8 | How big the moon button is, as a multiplier of its normal size. Turn it way up (5, 10...) while hunting for it so it is impossible to miss, then bring it back down once you know where it is. Grabbing works at any size. Host-only display - other players in multiplayer always see it at normal size. A changed value only applies the next time the button is placed. |
+| `General/ButtonGlow` | 1 | How strongly the moon glows, as a multiplier (0 turns the glow off entirely and leaves a plain lit model). It gives off a pale white: the moon itself lights up, and casts that light onto the pedestal and the floor around it. Host/local only, and applied the next time the button is placed. |
 | `General/LiveTuneSeconds` | 0 | Debug convenience: above 0, the button keeps re-placing itself on this interval (seconds) while you stay in the truck, picking up any position/yaw/scale change made through REPOConfig without leaving and coming back. 0 = off (placed once per visit, the normal behaviour). Leave it at 0 outside of a tuning session - re-placing pulls the button out from under anyone holding it. |
-| `General/MenuScale` | 0.65 | How big the moon menu popup is, as a multiplier of its normal size (1 = the size MenuLib gives it). Takes effect the next time you open the menu. |
+| `General/MenuScale` | 0.9 | How big the moon menu popup is, as a multiplier of its normal size (1 = the size MenuLib gives it). Takes effect the next time you open the menu. |
+
+## Notes
+
+- Multiplayer has had far less testing than singleplayer - if something looks off with other players in the room, please report it.
 
 ## Source and license
 

@@ -4,8 +4,8 @@ schemaVersion = "0.0.1"
 [package]
 namespace = "vibez"
 name = "MoonControl"
-versionNumber = "0.1.0"
-description = "Early work in progress. Turns off the moon's automatic difficulty rise - it stays off until you grab the moon button in the truck, capped by what your run has unlocked, with a value bonus for choosing a harder one."
+versionNumber = "1.0.0"
+description = "The game raises the moon on its own every 5 levels and never lowers it. This puts it in your hands: it stays off until you grab the moon button in the truck, capped by what your run has unlocked, and a harder moon makes every valuable worth more."
 websiteUrl = "https://github.com/ygorborges/repo-mods/tree/main/MoonControl"
 containsNsfwContent = false
 [package.dependencies]

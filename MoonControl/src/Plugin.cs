@@ -19,7 +19,7 @@ namespace MoonControl
     {
         public const string Guid = "vibez.MoonControl";
         public const string Name = "MoonControl";
-        public const string Version = "0.1.0";
+        public const string Version = "1.0.0";
 
         internal static ManualLogSource Log;
         internal static ConfigEntry<bool> Enabled;
@@ -29,6 +29,7 @@ namespace MoonControl
         internal static ConfigEntry<float> ButtonPositionZ;
         internal static ConfigEntry<float> ButtonYawDegrees;
         internal static ConfigEntry<float> ButtonScale;
+        internal static ConfigEntry<float> ButtonGlow;
         internal static ConfigEntry<float> LiveTuneSeconds;
         internal static ConfigEntry<float> MenuScale;
 
@@ -61,6 +62,12 @@ namespace MoonControl
                     + "(the hitbox scales with it) - the host is the one who sets this. A changed value only applies the next time "
                     + "the button is placed - either by leaving the truck and coming back, or automatically if LiveTuneSeconds is on.",
                     new AcceptableValueRange<float>(0.1f, 20f)));
+            ButtonGlow = Config.Bind("General", "ButtonGlow", 1f,
+                new ConfigDescription("How strongly the moon glows, as a multiplier (1 = normal, 0 = no glow at all - just a lit "
+                    + "model). It gives off a pale white: the moon itself lights up, and it casts that light onto the pedestal and "
+                    + "the floor around it. Local only, and applied the next time the button is placed (leave the truck and come "
+                    + "back, or use LiveTuneSeconds).",
+                    new AcceptableValueRange<float>(0f, 5f)));
             LiveTuneSeconds = Config.Bind("General", "LiveTuneSeconds", 0f,
                 new ConfigDescription("Debug convenience: while above 0, the moon button re-places itself on this interval (in "
                     + "seconds) for as long as you stay in the truck, picking up any ButtonPositionX/Y/Z/ButtonYawDegrees/"
@@ -68,7 +75,7 @@ namespace MoonControl
                     + "visit as usual. Leave this at 0 outside of a tuning session - re-placing pulls the button out from under "
                     + "anyone holding it or about to grab it.",
                     new AcceptableValueRange<float>(0f, 30f)));
-            MenuScale = Config.Bind("General", "MenuScale", 0.65f,
+            MenuScale = Config.Bind("General", "MenuScale", 0.9f,
                 new ConfigDescription("How big the moon menu popup is, as a multiplier of its normal size (1 = the size MenuLib "
                     + "gives it, smaller than 1 shrinks it). Takes effect the next time you open the menu.",
                     new AcceptableValueRange<float>(0.3f, 1.5f)));
