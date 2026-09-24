@@ -29,6 +29,7 @@ namespace UsableValuables
         private bool shakeErrorLogged;
         private bool clientErrorLogged;
         private bool spongeErrorLogged;
+        private bool soapErrorLogged;
 
         private void Awake()
         {
@@ -40,6 +41,7 @@ namespace UsableValuables
             Kinds.Bind(Config);
             Mischief.Bind(Config);
             Sponge.Bind(Config);
+            Soap.Bind(Config);
             StaffDamage.Bind(Config);
 
             try
@@ -166,6 +168,19 @@ namespace UsableValuables
                 {
                     spongeErrorLogged = true;
                     Log.LogError("Telling the other players about the dish sponge failed (logged once): " + ex);
+                }
+            }
+
+            try
+            {
+                Soap.Tick();
+            }
+            catch (Exception ex)
+            {
+                if (!soapErrorLogged)
+                {
+                    soapErrorLogged = true;
+                    Log.LogError("Telling the other players about the soap failed (logged once): " + ex);
                 }
             }
 

@@ -28,7 +28,7 @@ namespace DevTools
         {
             // The banana bow, the handface, the horse and the piano have no script of their own that UsableValuables reacts to:
             // it knows them by name.
-            foreach (string name in new[] { "banana bow", "handface", "horse", "piano", "dish sponge" })
+            foreach (string name in new[] { "banana bow", "handface", "horse", "piano", "dish sponge", "soap" })
             {
                 if (prefab.name.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0)
                 {

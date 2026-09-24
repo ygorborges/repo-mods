@@ -105,5 +105,13 @@ namespace UsableValuables
         // changes after it started (a fade) has to change that copy too, or the fade is undone.
         internal static readonly AccessTools.FieldRef<AudioLowPassLogic, float> LowPassVolume =
             AccessTools.FieldRefAccess<AudioLowPassLogic, float>("Volume");
+
+        // The soap's touch stuns an enemy the way the game's own hurt colliders do: EnemyStateStunned.Set(seconds) is public, but
+        // Enemy only exposes it (and says whether it exists at all) through internal fields.
+        internal static readonly AccessTools.FieldRef<Enemy, EnemyStateStunned> EnemyStunned =
+            AccessTools.FieldRefAccess<Enemy, EnemyStateStunned>("StateStunned");
+
+        internal static readonly AccessTools.FieldRef<Enemy, bool> EnemyHasStunned =
+            AccessTools.FieldRefAccess<Enemy, bool>("HasStateStunned");
     }
 }

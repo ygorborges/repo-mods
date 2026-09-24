@@ -75,7 +75,9 @@ namespace UsableValuables
             };
         }
 
-        private static void AddRoundedBox(List<Vector3> vertices, List<Vector3> normals, List<Vector2> uvs, List<int> triangles,
+        // Shared with SoapAssets: a rounded box is the base shape of both the sponge (two of them) and the soap bar (one, with a
+        // bigger radius for its softer, pill-like silhouette).
+        internal static void AddRoundedBox(List<Vector3> vertices, List<Vector3> normals, List<Vector2> uvs, List<int> triangles,
             Vector3 center, Vector3 size, float radius, Rect atlas)
         {
             Vector3 half = size * 0.5f;

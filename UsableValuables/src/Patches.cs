@@ -29,6 +29,15 @@ namespace UsableValuables
             {
                 Plugin.Log.LogError("Could not add the dish sponge: " + ex);
             }
+
+            try
+            {
+                Soap.Register();
+            }
+            catch (Exception ex)
+            {
+                Plugin.Log.LogError("Could not add the soap: " + ex);
+            }
         }
     }
 
