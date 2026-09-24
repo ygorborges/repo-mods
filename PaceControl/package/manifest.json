@@ -1,0 +1,9 @@
+{
+  "name": "PaceControl",
+  "version_number": "0.1.0",
+  "website_url": "https://github.com/ygorborges/repo-mods/tree/main/PaceControl",
+  "description": "Make some of a level's extraction points optional. They are all still built and still worth the same - the level just stops needing all of them, so a late-game level can be an hour or half of one, your call.",
+  "dependencies": [
+    "BepInEx-BepInExPack-5.4.2305"
+  ]
+}

@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Shared settings, paths and base references live in ..\Directory.Build.props -->
+  <PropertyGroup>
+    <AssemblyName>PaceControl</AssemblyName>
+    <RootNamespace>PaceControl</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="$(ManagedDir)\Photon3Unity3D.dll" Private="false" />
+    <Reference Include="$(ManagedDir)\PhotonRealtime.dll" Private="false" />
+    <Reference Include="$(ManagedDir)\PhotonUnityNetworking.dll" Private="false" />
+  </ItemGroup>
+
+</Project>
