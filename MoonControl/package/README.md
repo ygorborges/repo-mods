@@ -1,5 +1,7 @@
 # Moon Control
 
+**Work in progress.** This is an early, actively-changing build - menu layout, button placement and even the bonus formula have all shifted between versions, and not every change has been confirmed in a real game session yet. Expect rough edges, and please report anything odd (especially in multiplayer).
+
 The game raises the moon on its own, one step every 5 levels, and once it does the moon never goes back down for the rest of the run - it makes things progressively harder (and stranger) whether you want that or not. This mod takes that away: **the moon stays off until you turn one on yourself**, by grabbing the moon button in the truck, and only a moon your progress has actually earned can be chosen. Turning one on also gives every valuable a bonus to what it is worth, so choosing a harder moon is a choice, not just something that happens to you.
 
 ## The moon button
@@ -27,10 +29,6 @@ Edit them in `BepInEx/config/vibez.MoonControl.cfg` (or with REPOConfig).
 | `General/ButtonScale` | 1.8 | How big the moon button is, as a multiplier of its normal size. Turn it way up (5, 10...) while hunting for it so it is impossible to miss, then bring it back down once you know where it is. Grabbing works at any size. Host-only display - other players in multiplayer always see it at normal size. A changed value only applies the next time the button is placed. |
 | `General/LiveTuneSeconds` | 0 | Debug convenience: above 0, the button keeps re-placing itself on this interval (seconds) while you stay in the truck, picking up any position/yaw/scale change made through REPOConfig without leaving and coming back. 0 = off (placed once per visit, the normal behaviour). Leave it at 0 outside of a tuning session - re-placing pulls the button out from under anyone holding it. |
 | `General/MenuScale` | 0.65 | How big the moon menu popup is, as a multiplier of its normal size (1 = the size MenuLib gives it). Takes effect the next time you open the menu. |
-
-## Notes
-
-- This is an early version - please report anything odd, especially in multiplayer.
 
 ## Source and license
 

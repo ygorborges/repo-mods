@@ -1,0 +1,33 @@
+[config]
+schemaVersion = "0.0.1"
+
+[package]
+namespace = "vibez"
+name = "MoonControl"
+versionNumber = "0.1.0"
+description = "Early work in progress. Turns off the moon's automatic difficulty rise - it stays off until you grab the moon button in the truck, capped by what your run has unlocked, with a value bonus for choosing a harder one."
+websiteUrl = "https://github.com/ygorborges/repo-mods/tree/main/MoonControl"
+containsNsfwContent = false
+[package.dependencies]
+BepInEx-BepInExPack = "5.4.2305"
+nickklmao-MenuLib = "2.5.4"
+Zehs-REPOLib = "4.2.0"
+
+[build]
+icon = "./package/icon.png"
+readme = "./package/README.md"
+outdir = "./build"
+
+[[build.copy]]
+source = "./package/MoonControl.dll"
+target = "/"
+
+[[build.copy]]
+source = "./package/CHANGELOG.md"
+target = "/"
+
+[publish]
+repository = "https://thunderstore.io"
+communities = ["repo"]
+[publish.categories]
+repo = ["mods", "quality-of-life", "ai-generated"]

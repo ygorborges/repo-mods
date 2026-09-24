@@ -2,7 +2,7 @@
   "name": "MoonControl",
   "version_number": "0.1.0",
   "website_url": "https://github.com/ygorborges/repo-mods/tree/main/MoonControl",
-  "description": "Takes the moon's automatic difficulty rise away from the game: it stays off until you grab the moon button by the truck's level-number screen, capped by what your run has unlocked, with a value bonus for choosing a harder one.",
+  "description": "Early work in progress. Turns off the moon's automatic difficulty rise - it stays off until you grab the moon button in the truck, capped by what your run has unlocked, with a value bonus for choosing a harder one.",
   "dependencies": [
     "BepInEx-BepInExPack-5.4.2305",
     "nickklmao-MenuLib-2.5.4",
